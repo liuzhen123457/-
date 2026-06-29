@@ -1,0 +1,34 @@
+NCCL_DEBUG=WARN DEEPSPEED_TIMEOUT=120 deepspeed --num_gpus 1 --master_port=19901 src/train.py \
+    --deepspeed ds_config/ds_config_3.json \
+    --stage sft \
+    --model_name_or_path "./base_model/Qwen3-4B-Instruct" \
+    --adapter_name_or_path "./output/Qwen3-4B-stage1" \
+    --dataset "entity_cot,etiological_cot,correlation_cot,forecasting_cot" \
+    --interleave_probs "0.25,0.25,0.25,0.25" \
+    --do_train \
+    --mix_strategy "interleave_over" \
+    --template "STReasoner-CoT" \
+    --finetuning_type lora \
+    --lora_rank 8 \
+    --lora_alpha 16 \
+    --lora_target q_proj,v_proj \
+    --output_dir "./output/Qwen3-4B-stage2" \
+    --overwrite_output_dir \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 32 \
+    --lr_scheduler_type cosine \
+    --logging_steps 1 \
+    --save_steps 100 \
+    --learning_rate 1e-5 \
+    --timeseries_sft_lr 1e-5 \
+    --warmup_ratio 0.02 \
+    --num_train_epochs 0 \
+    --max_steps 1000 \
+    --plot_loss \
+    --fp16 \
+    --gradient_checkpointing \
+    --save_only_model \
+    --save_safetensors False \
+    --preprocessing_num_workers 1 \
+    --trust_remote_code True \
+    --cutoff_len 1024
